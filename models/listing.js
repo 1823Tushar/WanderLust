@@ -14,8 +14,14 @@ const listingSchema = new Schema(
     },
 
     image: {
-      url: String,
-      filename: String,
+      url: {
+        type : String,
+        default: "https://images.unsplash.com/photo-1626255047415-fdb067552f9b?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+      },
+      filename: {
+        type: String,
+        default: "default-image",
+      }
     },
 
     price: {
