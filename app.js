@@ -7,7 +7,9 @@ const methodOverride = require("method-override");
 const ejsMate = require("ejs-Mate");
 const wrapAsync = require("./utils/wrapAsync.js")
 const ExpressError = require("./utils/ExpressError.js")
-const { listingSchema } = require("./schema.js");
+const { listingSchema, reviewSchema } = require("./schema.js");
+const Review = require("./models/review.js");
+const review = require("./models/review.js");
 // database connection
 const MONGO_URL = "mongodb://127.0.0.1:27017/wandorlust";
 
@@ -30,6 +32,16 @@ app.get("/", (req,res) => {
 
 const validateListing = (req, res ,next) => {
     let {error} = listingSchema.validate(req.body);
+if (error) {
+    let errMsg = error.details.map((el)=> el.message).join(",")
+    throw new ExpressError(400, errMsg);
+} else {
+    next();
+}
+};
+// it is for review schema 
+const validateReview = (req, res ,next) => {
+    let {error} = reviewSchema.validate(req.body);
 if (error) {
     let errMsg = error.details.map((el)=> el.message).join(",")
     throw new ExpressError(400, errMsg);
@@ -98,6 +110,35 @@ app.delete("/listings/:id", wrapAsync(async (req,res) => {
     let {id} = req.params;
     await listing.findByIdAndDelete(id);
     res.redirect("/listings");
+}));
+//Reviews
+// post route 
+// app.post("/listings/:id/reviews",validateReview,wrapAsync( async (req,res)=> {
+// let Listing = await  listing.findById(req.params.id);
+// let newReview = new Review(req.body.review);
+// Listing.reviews.push(newReview);
+
+// await newReview.save();
+// await Listing.save();
+
+// // console.log("new review saved");
+// // res.send("new review saved ");
+//  res.redirect(`/listings/${Listing._id}`);
+//  console.log("BODY:", req.body);
+
+// }));
+app.post("/listings/:id/reviews", validateReview, wrapAsync(async (req, res) => {
+  let Listing = await listing.findById(req.params.id);
+
+  let newReview = new Review(req.body.review);
+  Listing.reviews.push(newReview);
+
+  await newReview.save();
+  await Listing.save();
+
+  console.log("BODY:", req.body);
+
+  res.redirect(`/listings/${Listing._id}`);
 }));
 
 app.use((req, res, next) => {
