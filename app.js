@@ -59,11 +59,21 @@ app.get("/listings", wrapAsync(async (req,res)=>{
 app.get("/listings/new", (req,res) => {
     res.render("listings/new");
 });
+// // show route
+// app.get("/listings/:id", wrapAsync(async (req, res) => {
+//     let {id} = req.params;
+//     const flisting = await listing.findById(id);
+//     res.render("listings/show", {listing: flisting});
+// }));
 // show route
 app.get("/listings/:id", wrapAsync(async (req, res) => {
-    let {id} = req.params;
-    const flisting = await listing.findById(id);
-    res.render("listings/show", {listing: flisting});
+    let { id } = req.params;
+
+    const flisting = await listing
+        .findById(id)
+        .populate("reviews");   
+
+    res.render("listings/show", { listing: flisting });
 }));
 
 //create Route
@@ -140,6 +150,17 @@ app.post("/listings/:id/reviews", validateReview, wrapAsync(async (req, res) => 
 
   res.redirect(`/listings/${Listing._id}`);
 }));
+// Delete Review Route
+app.delete("/listings/:id/reviews/:reviewId",
+     wrapAsync(async (req, res) => {
+    let { id, reviewId } = req.params;
+
+    await listing.findByIdAndUpdate(id, {$pull: {reviews: reviewId}});
+    await Review.findByIdAndDelete(reviewId);
+
+   res.redirect(`/listings/${id}`)
+}))
+
 
 app.use((req, res, next) => {
   next(new ExpressError(404, "Page Not Found!"));
