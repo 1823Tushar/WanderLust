@@ -30,14 +30,18 @@ router.get("/:id", wrapAsync(async (req, res) => {
 
     const flisting = await listing
         .findById(id)
-        .populate("reviews");   
-
+        .populate("reviews");
+        if(!flisting)   {
+            req.flash("error", 'Listing for you requested does not exist');
+           res.redirect("/listings");
+        }
     res.render("listings/show", { listing: flisting });
 }));
 // create route
 router.post("/",validateListing, wrapAsync(async(req,res, next) => {
   const newListing = new listing(req.body.listing);
   await newListing.save();
+  req.flash("success", 'new Listing Created');
   res.redirect("/listings");
 }));
 
@@ -45,6 +49,10 @@ router.post("/",validateListing, wrapAsync(async(req,res, next) => {
 router.get("/:id/edit", wrapAsync(async (req,res) => {
 let {id} = req.params;
     const NF_listing = await listing.findById(id);
+      if(!NF_listing)   {
+            req.flash("error", 'Listing for you requested does not exist');
+           res.redirect("/listings");
+        }
     res.render("listings/edit", {listing: NF_listing});
 }));
 
@@ -52,6 +60,7 @@ let {id} = req.params;
 router.put("/:id",validateListing, wrapAsync(async (req,res) => {
     let {id} = req.params;
     await listing.findByIdAndUpdate(id, {...req.body.listing});
+   req.flash("success", 'new Listing Updated');
     res.redirect("/listings");
 }));
 
@@ -59,6 +68,7 @@ router.put("/:id",validateListing, wrapAsync(async (req,res) => {
 router.delete("/:id", wrapAsync(async (req,res) => {
     let {id} = req.params;
     await listing.findByIdAndDelete(id);
+    req.flash("success", 'new Listing deleted');
     res.redirect("/listings");
 }));
 module.exports = router;
