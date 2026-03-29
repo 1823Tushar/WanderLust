@@ -5,6 +5,7 @@ body {
     flex-direction: column;
     min-height: 100vh;
 }
+
 .container {
     flex: 1;
 }
@@ -12,38 +13,41 @@ body {
 .navbar {
     height: 5rem;
     background-color: white;
-
 }
+
 .fa-compass {
     color: #fe424d;
     font-size: 2rem;
 }
+
 .nav-link {
     color: #222222 !important;
-
 }
+
 .f-info-links a {
     text-decoration: none;
     color: #222222;
 }
+
 .f-info-links a:hover {
     text-decoration: underline;
     color: #222222;
 }
+
 .f-info-links, 
 .f-info-socials,
 .f-info-brands  {
     width: 100%;
-    /* vertical-align: middle ; */
     display: flex;
-   align-items: center;
-   justify-content: center;
+    align-items: center;
+    justify-content: center;
 }
 
 .f-info-socials i {
     font-size: 1.2rem;
- margin-right: 1rem;
+    margin-right: 1rem;
 }
+
 .f-info {
     text-align: center;
     display: flex;
@@ -51,30 +55,34 @@ body {
     height: 8rem;
     flex-wrap: wrap;
     justify-content: center;
-    align-items: space-evenly;
+    align-items: center;
 }
+
 /* Cards */
 .listing-card {
     border: none !important;
     margin-bottom: 2rem;
 }
+
 .card-img-top {
-    border-radius: 1 rem !important;
+    border-radius: 1rem !important;
     width: 100% !important;
     object-fit: cover !important;
-};
+}
 
 .card-body {
-    padding: 0 !important;
-
+    padding: 1rem !important;
 }
+
 .card-body p {
     font-weight: 400 !important;
 }
+
 .listing-link {
     text-decoration: none;
 }
-/* card effects  */
+
+/* card effects */
 .card-img-overlay {
     opacity: 0;
 }
@@ -82,31 +90,27 @@ body {
 .card-img-overlay:hover {
     opacity: 0.2;
     background-color: white;
-
 }
+
 .add-btn {
     background-color: #fe424d !important;
     border: none !important;
-
 }
-/* Edit page  */
 
+/* Edit page */
 .edit-btn{
     background-color: #fe424d !important;
     border: none !important;
-
-
 }
-/* show page  */
+
+/* show page */
 .show-img {
-    height:30vh ;
+    height: 300px;
+    width: 100%;
+    object-fit: cover;
 }
-.btn {
-    display: flex;
 
-}
 .show-card {
     padding-left: 0;
     padding-right: 0;
-
 }
