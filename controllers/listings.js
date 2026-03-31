@@ -1,4 +1,5 @@
 const Listing = require("../models/listing");
+const axios = require("axios");
 
 module.exports.index = async (req, res,next) => {
     const alllistings = await Listing.find({});
@@ -27,11 +28,18 @@ module.exports.index = async (req, res,next) => {
   
       res.render("listings/show", { listing });
     };
-  module.exports.createListing = async (req, res, next) => {
+    module.exports.createListing = async (req, res, next) => {
     if (!req.file) {
         req.flash("error", "Image upload failed");
         return res.redirect("/listings/new");
     }
+
+   
+    let response = await axios.get(
+      `https://api.maptiler.com/geocoding/${req.body.listing.location}.json?key=process.env.MAP_TOKEN`
+    );
+
+    let coordinates = response.data.features[0].geometry.coordinates;
 
     let url = req.file.path;
     let filename = req.file.filename;
@@ -39,11 +47,16 @@ module.exports.index = async (req, res,next) => {
     const newListing = new Listing(req.body.listing);
     newListing.owner = req.user._id;
     newListing.image = { url, filename };
+    newListing.geometry = {
+      type: "Point",
+      coordinates: coordinates,
+    };
 
     await newListing.save();
     req.flash("success", "New Listing Created");
     res.redirect("/listings");
 };
+
       module.exports.renderEditForm = async (req, res,next) => {
           let { id } = req.params;
           const NF_listing = await Listing.findById(id);

@@ -1,4 +1,8 @@
 <% layout("/layouts/boilerplate") -%>
+<script>
+  const coordinates = <%- JSON.stringify(listing.geometry.coordinates) %>;
+  const mapToken = "<%= mapToken %>";
+</script>
 
 <div class="container mt-4">
   <div class="row">
@@ -43,16 +47,7 @@
 
         <form action="/listings/<%= listing._id %>/reviews" method="POST" novalidate>
 
-          <!-- <div class="mb-3">
-            <label for="rating" class="form-label">Rating</label>
-             <input 
-              type="range" 
-              name="review[rating]" 
-              min="1" 
-              max="5" 
-              class="form-range"
-            >
-          </div> -->
+        
           <div class="mb-3">
             <label for="rating" class="form-label">Rating</label>
           <fieldset class="starability-slot">
@@ -85,6 +80,7 @@
           <button class="btn btn-outline-dark">Submit</button>
         </form>
       </div>
+      
 
       <div class="mt-5">
         <h4>All Reviews</h4>
@@ -104,7 +100,7 @@
               <!-- <p class="starability-result card-text" data-rating="3"><%= review.rating %>  Rated: 3 stars
               </p> -->
               <p class="starability-result card-text" data-rating="<%= review.rating %>"></p>
-
+              <div id="map" style="height: 400px; width: 100%;"></div>
               <form
                 action="/listings/<%= listing._id %>/reviews/<%= review._id %>?_method=DELETE"
                 method="POST"

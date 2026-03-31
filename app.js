@@ -1,8 +1,5 @@
-if(process.env.NODE_ENV != "production") {
-    require('dotenv').config();
-}
 require("dotenv").config();
-console.log(process.env.secret);
+
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
@@ -15,25 +12,24 @@ const listingsRouter = require("./route/listings.js");
 const reviewsRouter = require("./route/review.js");
 const userRouter = require("./route/user.js");
 
-
 const flash = require("connect-flash");
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
 const User = require("./models/user.js");
 
 const sessionOptions = {
-    secret: "mysupersecretcode",
-    resave: false,
-    saveUninitialized: true,
-    cookie: {
-        expires: Date.now() + 7 * 24 * 60 * 60 * 1000,
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-        httpOnly: true
-    }
+  secret: "mysupersecretcode",
+  resave: false,
+  saveUninitialized: true,
+  cookie: {
+    expires: Date.now() + 7 * 24 * 60 * 60 * 1000,
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+    httpOnly: true,
+  },
 };
 
 app.get("/", (req, res) => {
-    res.send("Hi I am a Tushar");
+  res.send("Hi I am a Tushar");
 });
 
 app.use(session(sessionOptions));
@@ -47,42 +43,42 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
 app.use((req, res, next) => {
-    res.locals.success = req.flash("success");
-    res.locals.error = req.flash("error");
-    res.locals.currUser=  req.user;
-    next();
- });
-
+  res.locals.success = req.flash("success");
+  res.locals.error = req.flash("error");
+  res.locals.currUser = req.user;
+  next();
+});
 
 const MONGO_URL = "mongodb://127.0.0.1:27017/wandorlust";
 
 async function main() {
-    await mongoose.connect(MONGO_URL);
-    console.log("connected to db");
+  await mongoose.connect(MONGO_URL);
+  console.log("connected to db");
 }
 main().catch(err => console.log(err));
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
+
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
 app.engine("ejs", ejsMate);
-app.use(express.static(path.join(__dirname, "/public")));
+app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/listings", listingsRouter);
 app.use("/listings/:id/reviews", reviewsRouter);
-app.use("/",userRouter);
+app.use("/", userRouter);
 
 app.use((req, res, next) => {
-    next(new ExpressError(404, "Page Not Found!"));
+  next(new ExpressError(404, "Page Not Found!"));
 });
 
 app.use((err, req, res, next) => {
-    const { status = 500, message = "Something went wrong" } = err;
-    console.log(err.stack);
-    res.status(status).render("listings/error", { message: err });
-});
-app.listen(8080, () => {
-    console.log("server is listening to port 8080");
+  const { status = 500, message = "Something went wrong" } = err;
+  console.log(err.stack);
+  res.status(status).render("listings/error", { message });
 });
 
+app.listen(8080, () => {
+  console.log("server is listening to port 8080");
+});
