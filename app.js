@@ -28,9 +28,9 @@ const sessionOptions = {
   },
 };
 
-app.get("/", (req, res) => {
-  res.send("Hi I am a Tushar");
-});
+// app.get("/", (req, res) => {
+//   res.send("Hi I am a Tushar");
+// });
 
 app.use(session(sessionOptions));
 app.use(flash());
@@ -49,10 +49,10 @@ app.use((req, res, next) => {
   next();
 });
 
-const MONGO_URL = "mongodb://127.0.0.1:27017/wandorlust";
-
+// const MONGO_URL = "mongodb://127.0.0.1:27017/wandorlust";
+const dbUrl = process.env.ATLASDB_URL
 async function main() {
-  await mongoose.connect(MONGO_URL);
+  await mongoose.connect(dbUrl);
   console.log("connected to db");
 }
 main().catch(err => console.log(err));

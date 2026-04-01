@@ -9,52 +9,58 @@ module.exports.index = async (req, res,next) => {
   module.exports.renderNewForm = (req, res,next) => {
   res.render("listings/new")};
 
-  module.exports.showListing = async (req, res,next) => {
-      let { id } = req.params;
-  
-      const listing = await Listing.findById(id)
-        .populate({
-          path: "reviews",
-          populate: {
-            path: "author",
-          },
-        })
-        .populate("owner");
-  
-      if (!listing) {
-        req.flash("error", "Listing you requested does not exist");
-        return res.redirect("/listings");
-      }
-  
-      res.render("listings/show", { listing });
-    };
-    module.exports.createListing = async (req, res, next) => {
-    if (!req.file) {
-        req.flash("error", "Image upload failed");
-        return res.redirect("/listings/new");
-    }
+ module.exports.showListing = async (req, res) => {
+  let { id } = req.params;
 
-   
-    let response = await axios.get(
-      `https://api.maptiler.com/geocoding/${req.body.listing.location}.json?key=process.env.MAP_TOKEN`
-    );
+  const listing = await Listing.findById(id)
+    .populate({
+      path: "reviews",
+      populate: { path: "author" },
+    })
+    .populate("owner");
 
-    let coordinates = response.data.features[0].geometry.coordinates;
+  if (!listing) {
+    req.flash("error", "Listing does not exist");
+    return res.redirect("/listings");
+  }
 
+  res.render("listings/show", {
+    listing,
+    mapToken: process.env.MAP_TOKEN
+  });
+};
+  module.exports.createListing = async (req, res) => {
+  try {
     let url = req.file.path;
     let filename = req.file.filename;
 
     const newListing = new Listing(req.body.listing);
     newListing.owner = req.user._id;
     newListing.image = { url, filename };
+
+    const mapToken = process.env.MAP_TOKEN;
+
+    let geoRes = await axios.get(
+      `https://api.maptiler.com/geocoding/${req.body.listing.location}.json?key=${mapToken}`
+    );
+
+    let coordinates = geoRes.data.features[0].geometry.coordinates;
+
     newListing.geometry = {
       type: "Point",
       coordinates: coordinates,
     };
 
     await newListing.save();
+
     req.flash("success", "New Listing Created");
     res.redirect("/listings");
+
+  } catch (err) {
+    console.log(err);
+    req.flash("error", "Error creating listing");
+    res.redirect("/listings/new");
+  }
 };
 
       module.exports.renderEditForm = async (req, res,next) => {
